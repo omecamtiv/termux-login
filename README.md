@@ -30,4 +30,5 @@ Just run `auth -p` to change credentials.
 
 2. **I forgot password, now I can't open Termux. What to do?**  
 This is a serious problem. You have to launch Termux in Failsafe mode and delete the `passwd` file inside `etc` folder. After that restart Termux in normal mode.
-
+3. How to update Termux Login Utility?  
+Refer to [Updating Termux Login Utility](./UPDATING.md).  

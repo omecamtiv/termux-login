@@ -24,9 +24,49 @@ parser.add_argument(
 parser.add_argument(
         '-v',
         action='version',
-        version='%(prog)s 1.0')
+        version='%(prog)s 1.1')
 
 args = parser.parse_args()
+
+
+# Define color tables.
+
+
+class colors:
+    reset='\033[0m'
+    bold='\033[01m'
+    disable='\033[02m'
+    underline='\033[04m'
+    reverse='\033[07m'
+    strikethrough='\033[09m'
+    invisible='\033[08m'
+
+    class fg:
+        black='\033[30m'
+        red='\033[31m'
+        green='\033[32m'
+        orange='\033[33m'
+        blue='\033[34m'
+        purple='\033[35m'
+        cyan='\033[36m'
+        lightgrey='\033[37m'
+        darkgrey='\033[90m'
+        lightred='\033[91m'
+        lightgreen='\033[92m'
+        yellow='\033[93m'
+        lightblue='\033[94m'
+        pink='\033[95m'
+        lightcyan='\033[96m'
+
+    class bg:
+        black='\033[40m'
+        red='\033[41m'
+        green='\033[42m'
+        orange='\033[43m'
+        blue='\033[44m'
+        purple='\033[45m'
+        cyan='\033[46m'
+        lightgrey='\033[47m'
 
 
 # Defining variables.
@@ -44,6 +84,7 @@ successStatus = "\nStatus : Login Successfull."
 failedStatus = "\nStatus : Login Failed."
 unauthStatus = "\nStatus : Unauthorised."
 authStatus = "\nStatus: Authorised."
+registeredStatus = "\nStatus: User Registered."
 passwdPath = os.path.expandvars('$PREFIX/etc/passwd')
 passwdNotFound = "\nError: passwd file not found."
 user = ""
@@ -68,14 +109,14 @@ if (isPasswdPresent):
 
 
 def register():
-    print(registerHeading)
+    print(colors.fg.lightgrey + colors.bold + colors.underline + registerHeading + colors.reset)
     newUser = ""
     newPass = ""
     cnfPass = ""
     while (newUser == "" or newPass == "" or newPass != cnfPass):
-        newUser = input(newUserPrompt)
-        newPass = getpass.getpass(newPassPrompt)
-        cnfPass = getpass.getpass(cnfPassPrompt)
+        newUser = input(colors.fg.orange + colors.bold + newUserPrompt + colors.reset)
+        newPass = getpass.getpass(colors.fg.orange + colors.bold + newPassPrompt + colors.reset)
+        cnfPass = getpass.getpass(colors.fg.orange + colors.bold + cnfPassPrompt + colors.reset)
 
     passHash = bcrypt.hashpw(newPass.encode('utf-8'), bcrypt.gensalt())
     newHashedPassword = passHash.decode('utf-8')
@@ -86,6 +127,8 @@ def register():
         passwdFile.write(passwdContent)
     passwdFile.close()
 
+    print(colors.fg.green + colors.bold + colors.underline + registeredStatus + colors.reset)
+
     return 
 
 
@@ -93,14 +136,14 @@ def register():
 
 
 def login():
-    print(loginHeading)
-    loginUser = input(userPrompt)
-    loginPass = getpass.getpass(passPrompt)
+    print(colors.fg.lightgrey + colors.bold + colors.underline + loginHeading + colors.reset)
+    loginUser = input(colors.fg.orange + colors.bold + userPrompt + colors.reset)
+    loginPass = getpass.getpass(colors.fg.orange + colors.bold + passPrompt + colors.reset)
 
     if (loginUser == user and bcrypt.checkpw(loginPass.encode('utf-8'), hashedPassword.encode('utf-8'))):
-        print(successStatus)
+        print(colors.fg.green +  colors.bold + colors.underline + successStatus + colors.reset)
     else:
-        print(failedStatus)
+        print(colors.fg.red + colors.bold + colors.underline + failedStatus + colors.reset)
         print("")
         os.kill(os.getppid(), signal.SIGHUP)
     return
@@ -110,15 +153,15 @@ def login():
 
 
 def change():
-    print(changeHeading) 
-    loginUser = input(userPrompt)
-    loginPass = getpass.getpass(passPrompt)
+    print(colors.fg.lightgrey + colors.bold + colors.underline + changeHeading + colors.reset) 
+    loginUser = input(colors.fg.orange + colors.bold + userPrompt + colors.reset)
+    loginPass = getpass.getpass(colors.fg.orange + colors.bold + passPrompt + colors.reset)
 
     if (loginUser == user and bcrypt.checkpw(loginPass.encode('utf-8'), hashedPassword.encode('utf-8'))):
-        print(authStatus)
+        print(colors.fg.green + colors.bold + colors.underline + authStatus + colors.reset)
         register()
     else:
-        print(unauthStatus)
+        print(colors.fg.red + colors.bold + colors.underline + unauthStatus + colors.reset)
     return
 
 
@@ -130,7 +173,7 @@ if (args.p):
     if (user != "" or hashedPassword != ""):
         change()
     else:
-        print(passwdNotFound)
+        print(colors.fg.red + colors.bold + colors.underline + passwdNotFound + colors.reset)
 else:
     if (user != "" or hashedPassword != ""):
         login()
